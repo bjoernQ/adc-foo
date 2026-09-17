@@ -1,0 +1,73 @@
+menu "ADC Tester Configuration"
+
+    orsource "$IDF_PATH/examples/common_components/env_caps/$IDF_TARGET/Kconfig.env_caps"
+
+    config I2C_MASTER_SCL
+        int "I2C SCL GPIO"
+        range ENV_GPIO_RANGE_MIN ENV_GPIO_OUT_RANGE_MAX
+        default 4
+        help
+            GPIO for I2C clock (MCP4725 SCL).
+
+    config I2C_MASTER_SDA
+        int "I2C SDA GPIO"
+        range ENV_GPIO_RANGE_MIN ENV_GPIO_OUT_RANGE_MAX
+        default 5
+        help
+            GPIO for I2C data (MCP4725 SDA).
+
+    config I2C_MASTER_FREQUENCY
+        int "I2C master frequency (Hz)"
+        default 100000
+        help
+            I2C bus speed for MCP4725.
+
+    config MCP4725_I2C_ADDR
+        hex "MCP4725 I2C address (7-bit)"
+        range 0x60 0x67
+        default 0x60
+        help
+            7-bit I2C address of the MCP4725 (default 0x60).
+
+    config ADC_TEST_GPIO
+        int "ADC input GPIO (MCP4725 VOUT)"
+        range ENV_GPIO_RANGE_MIN ENV_GPIO_IN_RANGE_MAX
+        default 7 if IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
+        default 34 if IDF_TARGET_ESP32
+        default 3 if IDF_TARGET_ESP32C2 || IDF_TARGET_ESP32C3 || IDF_TARGET_ESP32C61 || IDF_TARGET_ESP32H2
+        default 6 if IDF_TARGET_ESP32C5 || IDF_TARGET_ESP32C6
+        default 28 if IDF_TARGET_ESP32H4
+        default 16 if IDF_TARGET_ESP32P4
+        default 48 if IDF_TARGET_ESP32S31
+        help
+            GPIO connected to MCP4725 VOUT. Defaults vary by chip; see boot banner.
+
+    config ADC_TEST_VREF_MV
+        int "Assumed MCP4725 Vref (mV)"
+        range 1000 5000
+        default 3300
+        help
+            Used to compute target output voltage from DAC codes.
+
+    config ADC_TEST_SWEEP_STEPS
+        int "Number of DAC sweep steps"
+        range 2 32
+        default 11
+        help
+            Number of evenly spaced DAC codes to test (0 to 4095).
+
+    config ADC_TEST_SETTLE_MS
+        int "Settling delay after DAC write (ms)"
+        range 1 1000
+        default 20
+        help
+            Delay before ADC read after changing DAC output.
+
+    config ADC_TEST_SAMPLES
+        int "ADC samples to average per step"
+        range 1 64
+        default 8
+        help
+            Number of oneshot reads averaged per sweep step.
+
+endmenu
