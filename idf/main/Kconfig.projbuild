@@ -37,8 +37,8 @@ menu "ADC Tester Configuration"
         default 3 if IDF_TARGET_ESP32C2 || IDF_TARGET_ESP32C3 || IDF_TARGET_ESP32C61 || IDF_TARGET_ESP32H2
         default 6 if IDF_TARGET_ESP32C5 || IDF_TARGET_ESP32C6
         default 28 if IDF_TARGET_ESP32H4
-        default 16 if IDF_TARGET_ESP32P4
-        default 48 if IDF_TARGET_ESP32S31
+        default 20 if IDF_TARGET_ESP32P4
+        default 47 if IDF_TARGET_ESP32S31
         help
             GPIO connected to MCP4725 VOUT. Defaults vary by chip; see boot banner.
 

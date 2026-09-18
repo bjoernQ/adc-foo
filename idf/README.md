@@ -28,10 +28,10 @@ The ADC pin defaults vary by chip (GPIO4/GPIO5 are reserved for I2C):
 | ESP32-C61 | GPIO3 | ADC1 ch1 |
 | ESP32-H2 | GPIO3 | ADC1 ch2 |
 | ESP32-H4 | GPIO28 | ADC1 ch0 |
-| ESP32-P4 | GPIO16 | ADC1 ch0 |
+| ESP32-P4 | GPIO20 | ADC1 ch4 (EV-board header; GPIO16 not exposed) |
 | ESP32-S2 | GPIO7 | ADC1 ch6 |
 | ESP32-S3 | GPIO7 | ADC1 ch6 |
-| ESP32-S31 | GPIO48 | ADC1 ch6 |
+| ESP32-S31 | GPIO47 | ADC1 ch5 (odd channel; even channels invert raw) |
 
 **Always check the boot banner** after flashing — it prints the exact wiring for the target you built, including other available ADC1 pins.
 

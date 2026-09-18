@@ -96,6 +96,10 @@ fn run_link_self_test<PIN>(
             board::ADC_GPIO,
             board::CHIP
         );
+    } else if raw_max < raw_min {
+        esp_println::println!(
+            "ERROR: ADC raw decreased as DAC voltage rose ({raw_min} -> {raw_max}). Check driver/wiring."
+        );
     } else {
         esp_println::println!("Link self-test passed (delta={delta})");
     }
@@ -125,9 +129,9 @@ fn main() -> ! {
             } else if #[cfg(any(feature = "esp32c2", feature = "esp32c3", feature = "esp32c61", feature = "esp32h2"))] {
                 peripherals.GPIO3
             } else if #[cfg(feature = "esp32p4")] {
-                peripherals.GPIO16
+                peripherals.GPIO20
             } else if #[cfg(feature = "esp32s31")] {
-                peripherals.GPIO48
+                peripherals.GPIO47
             } else {
                 peripherals.GPIO6
             }

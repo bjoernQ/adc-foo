@@ -16,7 +16,7 @@ esp-hal = { path = "D:/projects/esp/esp-hal/esp-hal", features = ["log-04", "uns
 esp-println = { path = "D:/projects/esp/esp-hal/esp-println", features = ["log-04"] }
 
 [features]
-default = ["esp32c6"]
+default = []
 esp32 = [
     "esp-backtrace/esp32",
     "esp-bootloader-esp-idf/esp32",

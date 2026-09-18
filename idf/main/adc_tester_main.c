@@ -11,6 +11,9 @@
 #include "esp_adc/adc_cali.h"
 #include "esp_adc/adc_cali_scheme.h"
 #include "soc/soc_caps.h"
+#if CONFIG_IDF_TARGET_ESP32S31
+#include "hal/adc_ll.h"
+#endif
 
 #if ADC_CALI_SCHEME_CURVE_FITTING_SUPPORTED
 #include "esp_efuse_rtc_calib.h"
@@ -140,8 +143,17 @@ static int adc_read_averaged(adc_oneshot_unit_handle_t adc_handle, adc_channel_t
 
 static int adc_linear_mv(int raw)
 {
+#if CONFIG_IDF_TARGET_ESP32S31
+    const int se = raw - ADC_LL_ZERO_DIFF_CODE;
+    const int span = 4393 - ADC_LL_ZERO_DIFF_CODE;
+    if (se <= 0) {
+        return 0;
+    }
+    return (int)((int64_t)se * CONFIG_ADC_TEST_VREF_MV / span);
+#else
     const int max_raw = (1 << SOC_ADC_RTC_MAX_BITWIDTH) - 1;
     return (int)((int64_t)raw * CONFIG_ADC_TEST_VREF_MV / max_raw);
+#endif
 }
 
 static esp_err_t dac_set_and_verify(mcp4725_handle_t *dac, uint16_t code, uint16_t *readback)
@@ -183,6 +195,9 @@ static void run_link_self_test(mcp4725_handle_t *dac, adc_oneshot_unit_handle_t 
         ESP_LOGE(TAG, "  2) MCP4725 VDD/GND must be common with the ESP");
         ESP_LOGE(TAG, "  3) Verify I2C SCL=GPIO%d SDA=GPIO%d and MCP4725 addr 0x%02X",
                  CONFIG_I2C_MASTER_SCL, CONFIG_I2C_MASTER_SDA, CONFIG_MCP4725_I2C_ADDR);
+    } else if (raw_max < raw_min) {
+        ESP_LOGE(TAG, "ADC raw decreased as DAC voltage rose (%d -> %d). Check driver/wiring.", raw_min,
+                 raw_max);
     } else {
         ESP_LOGI(TAG, "Link self-test passed (delta=%d)", delta);
     }

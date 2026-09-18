@@ -36,10 +36,13 @@ pub const ADC_GPIO: u8 = 34;
 pub const ADC_GPIO: u8 = 3;
 #[cfg(any(feature = "esp32c5", feature = "esp32c6"))]
 pub const ADC_GPIO: u8 = 6;
+// GPIO20 (ADC1 ch4) is exposed on the ESP32-P4-Function-EV-Board header; GPIO16 is not.
 #[cfg(feature = "esp32p4")]
-pub const ADC_GPIO: u8 = 16;
+pub const ADC_GPIO: u8 = 20;
+// Use an odd ADC1 channel: even channels invert raw vs input voltage on the
+// differential SAR (see IDF `test_assert_adc_raw` / `SOC_ADC_DIFF_SUPPORTED`).
 #[cfg(feature = "esp32s31")]
-pub const ADC_GPIO: u8 = 48;
+pub const ADC_GPIO: u8 = 47;
 
 #[cfg(feature = "esp32s31")]
 pub const CALIB_SCHEME: &str = "none";
@@ -53,6 +56,16 @@ pub const CALIB_SCHEME: &str = "line_fitting";
 )))]
 pub const CALIB_SCHEME: &str = "curve_fitting";
 
+#[cfg(feature = "esp32s31")]
+pub fn linear_mv(raw: u16) -> u32 {
+    use esp_hal::analog::adc::{FULL_SCALE, ZERO_DIFF_CODE};
+
+    let se = raw.saturating_sub(ZERO_DIFF_CODE) as u32;
+    let span = (FULL_SCALE - ZERO_DIFF_CODE) as u32;
+    se * crate::mcp4725::VREF_MV / span
+}
+
+#[cfg(not(feature = "esp32s31"))]
 pub fn linear_mv(raw: u16) -> u32 {
     (raw as u32 * crate::mcp4725::VREF_MV) / 4095
 }
